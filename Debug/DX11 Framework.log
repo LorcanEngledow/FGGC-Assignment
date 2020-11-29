@@ -1,0 +1,14 @@
+﻿  Application.cpp
+C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Application.cpp(360,15): warning C4458: declaration of 'wf' hides class member
+C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Application.h(55,7): message : see declaration of 'Application::wf'
+C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Application.cpp(476,22): warning C4458: declaration of 'cb' hides class member
+C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Application.h(71,17): message : see declaration of 'Application::cb'
+C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Application.cpp(476,20): warning C4101: 'cb': unreferenced local variable
+C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Application.cpp(360,10): warning C4189: 'wf': local variable is initialized but not referenced
+C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Application.cpp(569,80): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  DX11 Framework.cpp
+C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\DX11 Framework.cpp(8,42): warning C4316: 'Application': object allocated on the heap may not be aligned 16
+  Generating Code...
+C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Application.cpp(184): warning C4715: 'Application::InitCubeVertexBuffer': not all control paths return a value
+C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Application.cpp(256): warning C4715: 'Application::InitCubeIndexBuffer': not all control paths return a value
+  DX11 Framework.vcxproj -> C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Debug\DX11 Framework.exe
