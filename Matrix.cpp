@@ -7,9 +7,8 @@
 template<typename T>
 Matrix<T>::Matrix(unsigned _rows, unsigned _cols, const T& _initial) {
     mat.resize(_rows);
-    //…
-    // Complete code to initialise member elements
-    //…
+    T.resize(_cols);
+    
 
     rows = _rows;
     cols = _cols;
@@ -22,14 +21,16 @@ Matrix<T>::Matrix(const Matrix<T>& rhs) {
     //…
     // Complete code to overwrite member elements
     //…
+    
 
-
+    return(T);
 }
 
 
 // (Virtual) Destructor                                                                                                                                                       
 template<typename T>
 Matrix<T>::~Matrix() {}
+
 // Assignment Operator                                                                                                                                                        
 template<typename T>
 Matrix<T>& Matrix<T>::operator=(const Matrix<T>& rhs) {
