@@ -1,2 +1,4 @@
 C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Debug\DX11 Framework.exe
 C:\Users\Lorcan\OneDrive - Staffordshire University\Code\YEAR2\C++\DX11 Framework 2018\Debug\DX11 Framework.pdb
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Debug\DX11 Framework.exe
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Debug\DX11 Framework.pdb

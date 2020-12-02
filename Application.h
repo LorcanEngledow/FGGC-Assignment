@@ -12,7 +12,7 @@ using namespace DirectX;
 struct SimpleVertex
 {
     XMFLOAT3 Pos;
-    XMFLOAT4 Color;
+    XMFLOAT3 Normal;
 };
 
 struct ConstantBuffer
@@ -20,7 +20,14 @@ struct ConstantBuffer
 	XMMATRIX mWorld;
 	XMMATRIX mView;
 	XMMATRIX mProjection;
+
+	XMFLOAT4 DiffuseMtrl;
+	XMFLOAT4 DiffuseLight;
+	XMFLOAT3 LightVecW;
 	float gTime;
+
+	XMFLOAT4 AmbientMtrl;
+	XMFLOAT4 AmbientLight;
 };
 
 class Application
@@ -60,12 +67,16 @@ private:
 	HRESULT CompileShaderFromFile(WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut);
 	HRESULT InitShadersAndInputLayout();
 	HRESULT InitCubeVertexBuffer();
-	HRESULT InitPyramidVertexBuffer();
+	//HRESULT InitPyramidVertexBuffer();
 	HRESULT InitCubeIndexBuffer();
 	HRESULT InitPyramidIndexBuffer();
 
 	UINT _WindowHeight;
 	UINT _WindowWidth;
+
+	XMFLOAT3 lightDirection;
+	XMFLOAT4 diffuseMaterial;
+	XMFLOAT4 diffuseLight;
 
 public:
 	ConstantBuffer cb;
