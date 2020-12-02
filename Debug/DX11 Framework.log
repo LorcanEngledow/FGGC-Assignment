@@ -1,8 +1,8 @@
 ﻿  Application.cpp
 C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(372,15): warning C4458: declaration of 'wf' hides class member
-C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.h(59,7): message : see declaration of 'Application::wf'
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.h(62,7): message : see declaration of 'Application::wf'
 C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(488,22): warning C4458: declaration of 'cb' hides class member
-C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.h(79,17): message : see declaration of 'Application::cb'
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.h(82,17): message : see declaration of 'Application::cb'
 C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(488,20): warning C4101: 'cb': unreferenced local variable
 C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(372,10): warning C4189: 'wf': local variable is initialized but not referenced
 C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(581,80): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
