@@ -80,6 +80,13 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
     // Initialize the projection matrix
 	XMStoreFloat4x4(&_projection, XMMatrixPerspectiveFovLH(XM_PIDIV2, _WindowWidth / (FLOAT) _WindowHeight, 0.01f, 100.0f));
 
+    // Light direction from surface (XYZ)
+    lightDirection = XMFLOAT3(0.25f, 0.5f, -1.0f);
+    // Diffuse material properties (RGBA)
+    diffuseMaterial = XMFLOAT4(0.8f, 0.5f, 0.5f, 1.0f);
+    // Diffuse light colour (RGBA)
+    diffuseLight = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+
 	return S_OK;
 }
 
@@ -129,7 +136,7 @@ HRESULT Application::InitShadersAndInputLayout()
     D3D11_INPUT_ELEMENT_DESC layout[] =
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-        { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	UINT numElements = ARRAYSIZE(layout);
@@ -155,15 +162,15 @@ HRESULT Application::InitCubeVertexBuffer()
     // Create vertex buffer
     SimpleVertex vertices[] =
     {
-        { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f) }, //B
-        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT4(0.0f, 0.5f, 0.0f, 1.0f) }, //G
-        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f) }, //Y
-        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) }, //R
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.6f, 1.6f, 0.8f) }, //B
+        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.8f, 0.8f, -1.6f) }, //G
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-0.8f, 0.8f, 1.6f) }, //Y
+        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.6f, 1.6f, 0.8f) }, //R
 
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(1.0f, 0.4f, 0.4f, 1.0f) }, //P
-        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f) }, //BL
-        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f) }, //GR
-        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f) }, //W
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.6f, -1.6f, -0.8f) }, //P
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-0.8f, -0.8f, -1.6f) }, //BL
+        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.8f, -0.8f, 1.6f) }, //GR
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.6f, -1.6f, 0.8f) }, //W
     };
 
     D3D11_BUFFER_DESC bd;
@@ -183,19 +190,19 @@ HRESULT Application::InitCubeVertexBuffer()
         return hr;
 }
 
-HRESULT Application::InitPyramidVertexBuffer()
+/*HRESULT Application::InitPyramidVertexBuffer()
 {
 	HRESULT phr;
 
     // Create vertex buffer
     SimpleVertex pyramidVertices[] =
     {
-        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) }, //Base
-        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) }, 
-        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f) },
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 0.5f, 0.2f, 1.0f) }, //Base
+        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT4(0.0f, 0.5f, 0.2f, 1.0f) },
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 0.5f, 0.2f, 1.0f) },
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT4(0.0f, 0.5f, 0.2f, 1.0f) },
 
-        { XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f) }, // Tip
+        { XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT4(0.78f, 0.0f, 0.0f, 1.0f) }, // Tip
     };
 
     D3D11_BUFFER_DESC pbd;
@@ -215,7 +222,7 @@ HRESULT Application::InitPyramidVertexBuffer()
         return phr;
 
 	return S_OK;
-}
+}*/
 
 HRESULT Application::InitCubeIndexBuffer()
 {
@@ -224,18 +231,23 @@ HRESULT Application::InitCubeIndexBuffer()
     // Create index buffer
    WORD indices[] =
    {
-       0,1,2,
-       2,1,3,
-       0,1,4,
-       4,5,0,
-       7,0,2,
-       0,5,7,
-       3,6,7,
-       3,1,4,
-       6,7,4,
-       4,7,5,
+       4,1,3, //+x 1
        4,3,6,
-       7,2,3
+
+       3,1,0, //+y 3
+       3,0,2,
+
+       6,3,2, //+z 5
+       6,2,7,
+
+       7,2,0, //-x 7
+       7,0,5,
+
+       7,5,4, //-y 9
+       7,4,6,
+
+       5,0,1, //-z 11
+       5,1,4
    };
 
    D3D11_BUFFER_DESC bd;
@@ -455,7 +467,7 @@ HRESULT Application::InitDevice()
 
 	InitShadersAndInputLayout();
 
-    InitPyramidVertexBuffer();
+    //InitPyramidVertexBuffer();
     InitCubeVertexBuffer();
     InitCubeIndexBuffer();
     InitPyramidIndexBuffer();
@@ -555,7 +567,7 @@ void Application::Update()
     //
     // Animate the cube
     //
-    XMStoreFloat4x4(&_world, XMMatrixScaling(1.4, 1.4, 1.4) * XMMatrixRotationY(t)); //Sun
+    XMStoreFloat4x4(&_world, XMMatrixScaling(1.4, 1.4, 1.4) * XMMatrixRotationY(2) * XMMatrixRotationX(t)); //Sun
 
     XMStoreFloat4x4(&_world2, XMMatrixScaling(1.1, 1.1, 1.1) * XMMatrixTranslation(5, 0 ,0) * XMMatrixRotationY(t/500) * XMMatrixRotationY(t)); //Planet 1
 
@@ -593,12 +605,18 @@ void Application::Draw()
 	XMMATRIX world = XMLoadFloat4x4(&_world);
 	XMMATRIX view = XMLoadFloat4x4(&_view);
 	XMMATRIX projection = XMLoadFloat4x4(&_projection);
+
     //
     // Update variables
     //
 	cb.mWorld = XMMatrixTranspose(world);
 	cb.mView = XMMatrixTranspose(view);
 	cb.mProjection = XMMatrixTranspose(projection);
+
+    cb.LightVecW = lightDirection;
+    cb.DiffuseMtrl = diffuseMaterial;
+    cb.DiffuseLight = diffuseLight;
+    
 
     _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
@@ -624,35 +642,35 @@ void Application::Draw()
     _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
     _pImmediateContext->DrawIndexed(36, 0, 0);
 
-    XMMATRIX world2 = XMLoadFloat4x4(&_world2);
-    cb.mWorld = XMMatrixTranspose(world2);
-    _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    _pImmediateContext->DrawIndexed(36, 0, 0);
+    //XMMATRIX world2 = XMLoadFloat4x4(&_world2);
+    //cb.mWorld = XMMatrixTranspose(world2);
+    //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+    //_pImmediateContext->DrawIndexed(36, 0, 0);
 
-    XMMATRIX world3 = XMLoadFloat4x4(&_world3);
-    cb.mWorld = XMMatrixTranspose(world3);
-    _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    _pImmediateContext->DrawIndexed(36, 0, 0);
+    //XMMATRIX world3 = XMLoadFloat4x4(&_world3);
+    //cb.mWorld = XMMatrixTranspose(world3);
+    //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+    //_pImmediateContext->DrawIndexed(36, 0, 0);
 
     // Set vertex buffer
-    _pImmediateContext->IASetVertexBuffers(0, 1, &_pPyVertexBuffer, &stride, &offset);
+    //_pImmediateContext->IASetVertexBuffers(0, 1, &_pPyVertexBuffer, &stride, &offset);
     // Set index buffer
-    _pImmediateContext->IASetIndexBuffer(_pPyIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+    //_pImmediateContext->IASetIndexBuffer(_pPyIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
-    XMMATRIX moon = XMLoadFloat4x4(&_moon);
-    cb.mWorld = XMMatrixTranspose(moon);
-    _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    _pImmediateContext->DrawIndexed(18, 0, 0);
+    //XMMATRIX moon = XMLoadFloat4x4(&_moon);
+    //cb.mWorld = XMMatrixTranspose(moon);
+    //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+    //_pImmediateContext->DrawIndexed(18, 0, 0);
 
-    XMMATRIX moon2 = XMLoadFloat4x4(&_moon2);
-    cb.mWorld = XMMatrixTranspose(moon2);
-    _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    _pImmediateContext->DrawIndexed(18, 0, 0);
+    //XMMATRIX moon2 = XMLoadFloat4x4(&_moon2);
+    //cb.mWorld = XMMatrixTranspose(moon2);
+    //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+    //_pImmediateContext->DrawIndexed(18, 0, 0);
 
-    XMMATRIX pyramid = XMLoadFloat4x4(&_pyramid);
+    /*XMMATRIX pyramid = XMLoadFloat4x4(&_pyramid);
     cb.mWorld = XMMatrixTranspose(pyramid);
     _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    _pImmediateContext->DrawIndexed(18, 0, 0);
+    _pImmediateContext->DrawIndexed(18, 0, 0);*/
 
     //
     // Present our back buffer to our front buffer
