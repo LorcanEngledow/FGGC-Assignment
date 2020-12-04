@@ -14,6 +14,8 @@ public:
     vector3d();  //constructor	
     vector3d(float x1, float y1, float z1 = 0);  //construct with values.
     vector3d(const vector3d& vec); //copy constructor
+    vector3d(float xI, float yI, float zI, float xD, float yD, float zD);  //construct with two points
+    
 
         //Arithemetic Operators – note use of overloading
     vector3d operator+(const vector3d& vec);   //addition
