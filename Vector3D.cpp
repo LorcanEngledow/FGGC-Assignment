@@ -8,14 +8,21 @@ vector3d::vector3d()  //constructor
     z = 0;
 }
 
-vector3d::vector3d(float x1, float y1, float z1)  //construct with values.
+vector3d::vector3d(float x1, float y1, float z1)  //construct with values
 {
     x = x1;
     y = y1;
     z = z1;
 }
 
-vector3d::vector3d(const vector3d& vec)
+vector3d::vector3d(float xI, float yI, float zI, float xD, float yD, float zD)  //construct with two points
+{
+    x = xD - xI;
+    y = yD - yI;
+    z = zD - zI;
+}
+
+vector3d::vector3d(const vector3d& vec) // Construct with vector
 {
     x = vec.x;
     y = vec.y;
@@ -23,7 +30,7 @@ vector3d::vector3d(const vector3d& vec)
 }
 
 //addition
-vector3d vector3d ::operator+(const vector3d& vec)
+vector3d vector3d::operator+(const vector3d& vec)
 {
     //Returns a new vector summing the values for each component with the 
     //corresponding component in the added vector
@@ -31,7 +38,7 @@ vector3d vector3d ::operator+(const vector3d& vec)
 }
 
 
-vector3d& vector3d ::operator+=(const vector3d& vec)
+vector3d& vector3d::operator+=(const vector3d& vec)
 {
     //Returns ‘this’ pointer (i.e. self-reference summing the values for 
     //each component with the corresponding component in the added vector
@@ -132,7 +139,7 @@ float vector3d::square()
 vector3d vector3d::normalization()
 {
     float temp = magnitude();
-    return vector3d(x / temp, y / temp, z / temp);
+    return vector3d(x /= temp, y /= temp, z /= temp);
 }
 float vector3d::distance(const vector3d& vec)
 {

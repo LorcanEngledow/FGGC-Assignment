@@ -16,32 +16,25 @@ cbuffer ConstantBuffer : register( b0 )
     float4 DiffuseMtrl;
     float4 DiffuseLight;
     float3 LightVecW;
+
     float gTime;
+
+    float4 AmbientMtrl;
+    float4 AmbientLight;
+
+    float4 SpecularMtrl;
+    float4 SpecularLight;
+    float  SpecularPower;
+    float3 EyePosW;
 }
 
 //--------------------------------------------------------------------------------------
 struct VS_OUTPUT
 {
     float4 Pos : SV_POSITION;
-    float4 Color : COLOR0;
+    float3 Norm : NORMAL;
+	float3 PosW : POSITION;
 };
-
-/*//--------------------------------------------------------------------------------------
-// Vertex Shader
-//--------------------------------------------------------------------------------------
-VS_OUTPUT VS( float4 Pos : POSITION, float4 Color : COLOR)
-{
-    VS_OUTPUT output = (VS_OUTPUT)0;
-
-   // Pos.xy += 0.5f * sin(Pos.x) * sin(3.0f * gTime);
-    //Pos.z *= 0.6f + 0.4f * sin(2.0f * gTime);
-
-    output.Pos = mul( Pos, World );
-    output.Pos = mul( output.Pos, View );
-    output.Pos = mul( output.Pos, Projection );
-    output.Color = Color;
-    return output;
-}*/
 
 //------------------------------------------------------------------------------------
 // Vertex Shader - Implements Gouraud Shading using Diffuse lighting only
@@ -51,19 +44,19 @@ VS_OUTPUT VS(float4 Pos : POSITION, float3 NormalL : NORMAL)
     VS_OUTPUT output = (VS_OUTPUT)0;
 
     output.Pos = mul(Pos, World);
-    output.Pos = mul(output.Pos, View);
-    output.Pos = mul(output.Pos, Projection);
+
+	
+
+	output.Pos = mul(output.Pos, View);
+	output.Pos = mul(output.Pos, Projection);
 
     // Convert from local space to world space 
     // W component of vector is 0 as vectors cannot be translated
-    float3 normalW = mul(float4(NormalL, 0.0f), World).xyz;
-    normalW = normalize(normalW);
-
-    // Compute Colour using Diffuse lighting only
-    float diffuseAmount = max(dot(LightVecW, normalW), 0.0f);
-    output.Color.rgb = diffuseAmount * (DiffuseMtrl * DiffuseLight).rgb;
-    output.Color.a = DiffuseMtrl.a;
-
+	float3 normalW = mul(float4(NormalL, 0.0f), World).xyz;
+	normalW = normalize(normalW);    
+    
+	output.Norm = normalW;
+    
     return output;
 }
 
@@ -73,5 +66,23 @@ VS_OUTPUT VS(float4 Pos : POSITION, float3 NormalL : NORMAL)
 //--------------------------------------------------------------------------------------
 float4 PS( VS_OUTPUT input ) : SV_Target
 {
-    return input.Color;
+	float3 toEye = normalize(EyePosW - input.Pos.xyz);
+    
+	// Compute Diffuse lighting 
+	float diffuseAmount = max(dot(LightVecW, input.Norm), 0.0f);
+	float3 diffuse = diffuseAmount * (DiffuseMtrl * DiffuseLight).rgb;
+    
+    //Compute Ambient Shading
+	float3 ambient = AmbientMtrl * AmbientLight;
+    
+    //Compute Specular highlights
+	float3 r = reflect(-LightVecW, input.Norm);
+	float specularAmount = pow(max(dot(r, toEye), 0.0f), SpecularPower);
+	float3 specular = specularAmount * (SpecularMtrl * SpecularLight).rgb;
+    
+	float4 Color;
+    Color.rgb = ambient + diffuse + specular;
+	Color.a = DiffuseMtrl.a;
+    
+	return Color;
 }

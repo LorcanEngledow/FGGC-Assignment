@@ -71,9 +71,11 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	XMStoreFloat4x4(&_world, XMMatrixIdentity());
 
     // Initialize the view matrix
-	XMVECTOR Eye = XMVectorSet(2.0f, 8.0f, 2.0f, 0.0f);
-	XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	XMVECTOR Eye = XMVectorSet(9.0f, 8.0f, 0.0f, 0.0f);
+	XMVECTOR At = XMVectorSet(0.0f, -4.0f, 0.0f, 0.0f);
+	XMVECTOR Up = XMVectorSet(0.0f, 4.0f, 0.0f, 0.0f);
+
+    EyePosW = XMFLOAT3(9.0f, 8.0f, 0.0f);
 
 	XMStoreFloat4x4(&_view, XMMatrixLookAtLH(Eye, At, Up));
 
@@ -86,6 +88,18 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
     diffuseMaterial = XMFLOAT4(0.8f, 0.5f, 0.5f, 1.0f);
     // Diffuse light colour (RGBA)
     diffuseLight = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    // Ambient material properties (RGBA)
+    AmbientMaterial = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+    // Ambient light properties (RGBA)
+    AmbientLight = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+
+    // Specular material properties (RGBA)
+    SpecularMaterial = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+    // Spuclar light properties (RGBA)
+    SpecularLight = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+    // Specular Power
+    SpecularPower = 10.0f;
 
 	return S_OK;
 }
@@ -539,8 +553,6 @@ void Application::Update()
     
     // Update our time
     static float t = 0.0f;
-    
-    
 
     if (_driverType == D3D_DRIVER_TYPE_REFERENCE)
     {
@@ -616,9 +628,14 @@ void Application::Draw()
     cb.LightVecW = lightDirection;
     cb.DiffuseMtrl = diffuseMaterial;
     cb.DiffuseLight = diffuseLight;
-    
+    cb.AmbientMtrl = AmbientMaterial;
+    cb.AmbientLight = AmbientLight;
+    cb.SpecularMtrl = SpecularMaterial;
+    cb.SpecularLight = SpecularLight;
+    cb.SpecularPower = SpecularPower;
+    cb.EyePosW = EyePosW;
 
-    _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+   _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
 
     // Set vertex buffer
     UINT stride = sizeof(SimpleVertex);
@@ -642,30 +659,30 @@ void Application::Draw()
     _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
     _pImmediateContext->DrawIndexed(36, 0, 0);
 
-    //XMMATRIX world2 = XMLoadFloat4x4(&_world2);
-    //cb.mWorld = XMMatrixTranspose(world2);
-    //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    //_pImmediateContext->DrawIndexed(36, 0, 0);
+    XMMATRIX world2 = XMLoadFloat4x4(&_world2);
+    cb.mWorld = XMMatrixTranspose(world2);
+    _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+    _pImmediateContext->DrawIndexed(36, 0, 0);
 
-    //XMMATRIX world3 = XMLoadFloat4x4(&_world3);
-    //cb.mWorld = XMMatrixTranspose(world3);
-    //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    //_pImmediateContext->DrawIndexed(36, 0, 0);
+    XMMATRIX world3 = XMLoadFloat4x4(&_world3);
+    cb.mWorld = XMMatrixTranspose(world3);
+    _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+    _pImmediateContext->DrawIndexed(36, 0, 0);
 
     // Set vertex buffer
     //_pImmediateContext->IASetVertexBuffers(0, 1, &_pPyVertexBuffer, &stride, &offset);
     // Set index buffer
     //_pImmediateContext->IASetIndexBuffer(_pPyIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
-    //XMMATRIX moon = XMLoadFloat4x4(&_moon);
-    //cb.mWorld = XMMatrixTranspose(moon);
-    //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    //_pImmediateContext->DrawIndexed(18, 0, 0);
+    XMMATRIX moon = XMLoadFloat4x4(&_moon);
+    cb.mWorld = XMMatrixTranspose(moon);
+    _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+    _pImmediateContext->DrawIndexed(36, 0, 0);
 
-    //XMMATRIX moon2 = XMLoadFloat4x4(&_moon2);
-    //cb.mWorld = XMMatrixTranspose(moon2);
-    //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    //_pImmediateContext->DrawIndexed(18, 0, 0);
+    XMMATRIX moon2 = XMLoadFloat4x4(&_moon2);
+    cb.mWorld = XMMatrixTranspose(moon2);
+    _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+    _pImmediateContext->DrawIndexed(36, 0, 0);
 
     /*XMMATRIX pyramid = XMLoadFloat4x4(&_pyramid);
     cb.mWorld = XMMatrixTranspose(pyramid);
