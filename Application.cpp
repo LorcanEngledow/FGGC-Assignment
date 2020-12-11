@@ -768,20 +768,20 @@ void Application::Draw()
     _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
     _pImmediateContext->DrawIndexed(36, 0, 0);
 
+    XMMATRIX moon = XMLoadFloat4x4(&_moon);
+    cb.mWorld = XMMatrixTranspose(moon);
+    _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+    _pImmediateContext->DrawIndexed(36, 0, 0);
+
+    XMMATRIX moon2 = XMLoadFloat4x4(&_moon2);
+    cb.mWorld = XMMatrixTranspose(moon2);
+    _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+    _pImmediateContext->DrawIndexed(36, 0, 0);
+
     // /*Set vertex buffer
     //_pImmediateContext->IASetVertexBuffers(0, 1, &_pPyVertexBuffer, &stride, &offset);
     // Set index buffer
     //_pImmediateContext->IASetIndexBuffer(_pPyIndexBuffer, DXGI_FORMAT_R16_UINT, 0);*/
-
-    //XMMATRIX moon = XMLoadFloat4x4(&_moon);
-    //cb.mWorld = XMMatrixTranspose(moon);
-    //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    //_pImmediateContext->DrawIndexed(36, 0, 0);
-
-    //XMMATRIX moon2 = XMLoadFloat4x4(&_moon2);
-    //cb.mWorld = XMMatrixTranspose(moon2);
-    //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    //_pImmediateContext->DrawIndexed(36, 0, 0);
 
     /*XMMATRIX pyramid = XMLoadFloat4x4(&_pyramid);
     cb.mWorld = XMMatrixTranspose(pyramid);

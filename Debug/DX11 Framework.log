@@ -8,4 +8,5 @@ C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(485,10): warni
 C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(691,80): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(283): warning C4715: 'Application::InitCubeVertexBuffer': not all control paths return a value
 C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(381): warning C4715: 'Application::InitCubeIndexBuffer': not all control paths return a value
+Application.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
   DX11 Framework.vcxproj -> C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Debug\DX11 Framework.exe
