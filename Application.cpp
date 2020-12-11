@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "DDSTextureLoader.h"
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -71,7 +72,7 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 	XMStoreFloat4x4(&_world, XMMatrixIdentity());
 
     // Initialize the view matrix
-	XMVECTOR Eye = XMVectorSet(2.0f, 8.0f, 2.0f, 0.0f);
+	XMVECTOR Eye = XMVectorSet(5.0f, 5.0f, 2.0f, 0.0f);
 	XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
@@ -86,6 +87,36 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
     diffuseMaterial = XMFLOAT4(0.8f, 0.5f, 0.5f, 1.0f);
     // Diffuse light colour (RGBA)
     diffuseLight = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+
+    // Ambient material properties (RGBA)
+    AmbientMaterial = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+    // Ambient light properties (RGBA)
+    AmbientLight = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+
+    // Specular material properties (RGBA)
+    SpecularMaterial = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+    // Spuclar light properties (RGBA)
+    SpecularLight = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+    // Specular Power
+    SpecularPower = 3.0f;
+
+
+    // Creates DDS Texture Object and assigns it to texture register 0
+    CreateDDSTextureFromFile(_pd3dDevice, L"Crate_COLOR.dds", nullptr, &_pTextureRV);
+    _pImmediateContext->PSSetShaderResources(0, 1, &_pTextureRV);
+
+    // Create the sample state
+    D3D11_SAMPLER_DESC sampDesc;
+    ZeroMemory(&sampDesc, sizeof(sampDesc));
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+    _pd3dDevice->CreateSamplerState(&sampDesc, &_pSamplerLinear);
 
 	return S_OK;
 }
@@ -137,6 +168,7 @@ HRESULT Application::InitShadersAndInputLayout()
     {
         { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
         { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 
 	UINT numElements = ARRAYSIZE(layout);
@@ -162,21 +194,81 @@ HRESULT Application::InitCubeVertexBuffer()
     // Create vertex buffer
     SimpleVertex vertices[] =
     {
-        { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.6f, 1.6f, 0.8f) }, //B
-        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.8f, 0.8f, -1.6f) }, //G
-        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-0.8f, 0.8f, 1.6f) }, //Y
-        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.6f, 1.6f, 0.8f) }, //R
+        // Top
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) }, // 3 // 0
+        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) }, // 1 // 1
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) }, // 0 // 2
 
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.6f, -1.6f, -0.8f) }, //P
-        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-0.8f, -0.8f, -1.6f) }, //BL
-        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.8f, -0.8f, 1.6f) }, //GR
-        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.6f, -1.6f, 0.8f) }, //W
+        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) }, // 2 // 3
+        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) }, // 1 // 4
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) }, // 3 // 5
+
+        // Bottom
+        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) }, // 6 // 6
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) }, // 4 // 7
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) }, // 5 // 8
+
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) }, // 7 // 9
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) }, // 4 // 10
+        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) }, // 6 // 11
+
+        // Left
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) }, // 11 // 12
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) }, // 9 // 13
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 1.0f) }, // 8 // 14
+
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) }, // 10 // 15
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) }, // 9 // 16
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) }, // 11 // 17
+
+        // Right
+        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) }, // 14 // 18
+        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) }, // 12 // 19
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) }, // 13 // 20
+
+        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 0.0f) }, // 18 // 27
+        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1.0f, 1.0f) }, // 17 // 28
+        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(0.0f, 0.0f) }, // 19 // 29
+
+        // Front
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) }, // 19 // 24
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) }, // 17 // 25
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 1.0f) }, // 16 // 26
+
+        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 0.0f) }, // 19 // 24
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(1.0f, 1.0f) }, // 19 // 24
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(0.0f, 0.0f, -1.0f), XMFLOAT2(0.0f, 0.0f) }, // 19 // 24
+
+        // Back
+        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) }, // 19 // 24
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) }, // 17 // 25
+        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) }, // 16 // 26
+
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) }, // 19 // 24
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) }, // 19 // 24
+        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) }, // 19 // 24
+
     };
+
+    SimpleVertex vertices2[] =
+    {
+        { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.6f, 1.6f, 0.8f), XMFLOAT2(1.0f, 1.0f) }, //B
+        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.8f, 0.8f, -1.6f), XMFLOAT2(1.0f, 1.0f) }, //G
+        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-0.8f, 0.8f, 1.6f), XMFLOAT2(1.0f, 1.0f) }, //Y
+        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.6f, 1.6f, 0.8f), XMFLOAT2(1.0f, 1.0f) }, //R
+
+        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.6f, -1.6f, -0.8f), XMFLOAT2(1.0f, 1.0f) }, //P
+        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-0.8f, -0.8f, -1.6f), XMFLOAT2(1.0f, 1.0f) }, //BL
+        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.8f, -0.8f, 1.6f), XMFLOAT2(1.0f, 1.0f) }, //GR
+        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.6f, -1.6f, 0.8f), XMFLOAT2(1.0f, 1.0f) }, //W
+    };
+
+    //CalculateModelVectors(vertices, 36);
 
     D3D11_BUFFER_DESC bd;
     ZeroMemory(&bd, sizeof(bd));
     bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof(SimpleVertex) * 8;
+    bd.ByteWidth = sizeof(SimpleVertex) * 36;
     bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bd.CPUAccessFlags = 0;
 
@@ -228,27 +320,48 @@ HRESULT Application::InitCubeIndexBuffer()
 {
     HRESULT hr;
 
+    /*WORD indices[] =
+  {
+      4,1,3, //+x 1
+      4,3,6,
+
+      3,1,0, //+y 3
+      3,0,2,
+
+      6,3,2, //+z 5
+      6,2,7,
+
+      7,2,0, //-x 7
+      7,0,5,
+
+      7,5,4, //-y 9
+      7,4,6,
+
+      5,0,1, //-z 11
+      5,1,4
+  };*/
+
     // Create index buffer
-   WORD indices[] =
-   {
-       4,1,3, //+x 1
-       4,3,6,
+    WORD indices[] =
+    {
+        0,1,2,
+        3,4,5,
 
-       3,1,0, //+y 3
-       3,0,2,
+        6,7,8,
+        9,10,11,
 
-       6,3,2, //+z 5
-       6,2,7,
+        12,13,14,
+        15,16,17,
 
-       7,2,0, //-x 7
-       7,0,5,
+        18,19,20,
+        21,22,23,
 
-       7,5,4, //-y 9
-       7,4,6,
+        24,25,26,
+        27,28,29,
 
-       5,0,1, //-z 11
-       5,1,4
-   };
+        30,31,32,
+        33,34,35
+    };
 
    D3D11_BUFFER_DESC bd;
    ZeroMemory(&bd, sizeof(bd));
@@ -536,11 +649,8 @@ void Application::Cleanup()
 
 void Application::Update()
 {
-    
     // Update our time
     static float t = 0.0f;
-    
-    
 
     if (_driverType == D3D_DRIVER_TYPE_REFERENCE)
     {
@@ -567,17 +677,17 @@ void Application::Update()
     //
     // Animate the cube
     //
-    XMStoreFloat4x4(&_world, XMMatrixScaling(1.4, 1.4, 1.4) * XMMatrixRotationY(2) * XMMatrixRotationX(t)); //Sun
+    XMStoreFloat4x4(&_world, XMMatrixScaling(1.4, 1.4, 1.4) * XMMatrixRotationY(t)); //Sun
 
     XMStoreFloat4x4(&_world2, XMMatrixScaling(1.1, 1.1, 1.1) * XMMatrixTranslation(5, 0 ,0) * XMMatrixRotationY(t/500) * XMMatrixRotationY(t)); //Planet 1
 
-	XMStoreFloat4x4(&_moon, XMMatrixScaling(0.7, 0.7, 0.7) * XMMatrixRotationY(t*2) * (XMMatrixTranslation(4.0, 0.0, 0.0) * XMMatrixRotationY(t))
+	XMStoreFloat4x4(&_moon, XMMatrixScaling(0.7, 0.7, 0.7) * XMMatrixRotationY(t*2) * XMMatrixRotationZ(t) * (XMMatrixTranslation(4.0, 0.0, 0.0)  * XMMatrixRotationY(t))
                                                         * (XMMatrixRotationY(t*2)* XMMatrixTranslation(6.0, 0.0, 0.0) * XMMatrixRotationY(t))); //Moon 1
 
 
     XMStoreFloat4x4(&_world3, XMMatrixScaling(0.9, 0.9, 0.9) * XMMatrixTranslation(5, 0, 0) *  XMMatrixRotationY(t / 500) * XMMatrixRotationY(t*2)); //Planet 2
 
-    XMStoreFloat4x4(&_moon2, XMMatrixScaling(0.4, 0.4, 0.4) * XMMatrixRotationY(t * 2) * (XMMatrixTranslation(2.0, 0.0, 0.0) * XMMatrixRotationY(t))
+    XMStoreFloat4x4(&_moon2, XMMatrixScaling(0.4, 0.4, 0.4) * XMMatrixRotationY(t * 2) * XMMatrixRotationZ(t*2) * (XMMatrixTranslation(2.0, 0.0, 0.0) * XMMatrixRotationY(t))
                                                         * (XMMatrixRotationY(t * 1.5) * XMMatrixTranslation(8.0, 0.0, 0.0) * XMMatrixRotationY(t*2))); //Moon 2
 
     XMStoreFloat4x4(&_pyramid, XMMatrixRotationY(t * 2) * XMMatrixTranslation(3, 2, 3)); //Pyramid
@@ -616,9 +726,15 @@ void Application::Draw()
     cb.LightVecW = lightDirection;
     cb.DiffuseMtrl = diffuseMaterial;
     cb.DiffuseLight = diffuseLight;
-    
+    cb.AmbientMtrl = AmbientMaterial;
+    cb.AmbientLight = AmbientLight;
+    cb.SpecularMtrl = SpecularMaterial;
+    cb.SpecularLight = SpecularLight;
+    cb.SpecularPower = SpecularPower;
+    cb.EyePosW = EyePosW;
 
     _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
+    _pImmediateContext->PSSetSamplers(0, 1, &_pSamplerLinear);
 
     // Set vertex buffer
     UINT stride = sizeof(SimpleVertex);
@@ -652,20 +768,20 @@ void Application::Draw()
     //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
     //_pImmediateContext->DrawIndexed(36, 0, 0);
 
-    // Set vertex buffer
+    // /*Set vertex buffer
     //_pImmediateContext->IASetVertexBuffers(0, 1, &_pPyVertexBuffer, &stride, &offset);
     // Set index buffer
-    //_pImmediateContext->IASetIndexBuffer(_pPyIndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+    //_pImmediateContext->IASetIndexBuffer(_pPyIndexBuffer, DXGI_FORMAT_R16_UINT, 0);*/
 
     //XMMATRIX moon = XMLoadFloat4x4(&_moon);
     //cb.mWorld = XMMatrixTranspose(moon);
     //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    //_pImmediateContext->DrawIndexed(18, 0, 0);
+    //_pImmediateContext->DrawIndexed(36, 0, 0);
 
     //XMMATRIX moon2 = XMLoadFloat4x4(&_moon2);
     //cb.mWorld = XMMatrixTranspose(moon2);
     //_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);
-    //_pImmediateContext->DrawIndexed(18, 0, 0);
+    //_pImmediateContext->DrawIndexed(36, 0, 0);
 
     /*XMMATRIX pyramid = XMLoadFloat4x4(&_pyramid);
     cb.mWorld = XMMatrixTranspose(pyramid);

@@ -13,6 +13,7 @@ struct SimpleVertex
 {
     XMFLOAT3 Pos;
     XMFLOAT3 Normal;
+	XMFLOAT2 Tex;
 };
 
 struct ConstantBuffer
@@ -28,6 +29,11 @@ struct ConstantBuffer
 
 	XMFLOAT4 AmbientMtrl;
 	XMFLOAT4 AmbientLight;
+
+	XMFLOAT4 SpecularMtrl;
+	XMFLOAT4 SpecularLight;
+	float SpecularPower;
+	XMFLOAT3 EyePosW;
 };
 
 class Application
@@ -59,6 +65,9 @@ private:
 	ID3D11RasterizerState* _wireFrame;
 	ID3D11RasterizerState* _solid;
 
+	ID3D11ShaderResourceView* _pTextureRV = nullptr;
+	ID3D11SamplerState* _pSamplerLinear = nullptr;
+
 	bool wf;
 private:
 	HRESULT InitWindow(HINSTANCE hInstance, int nCmdShow);
@@ -78,6 +87,13 @@ private:
 	XMFLOAT4 diffuseMaterial;
 	XMFLOAT4 diffuseLight;
 
+	XMFLOAT4 AmbientMaterial;
+	XMFLOAT4 AmbientLight;
+
+	XMFLOAT4 SpecularMaterial;
+	XMFLOAT4 SpecularLight;
+	float SpecularPower;
+	XMFLOAT3 EyePosW;
 public:
 	ConstantBuffer cb;
 	Application();
