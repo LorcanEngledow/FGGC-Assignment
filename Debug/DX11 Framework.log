@@ -1,11 +1,11 @@
 ﻿  Application.cpp
-C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(386,15): warning C4458: declaration of 'wf' hides class member
-C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.h(67,7): message : see declaration of 'Application::wf'
-C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(502,22): warning C4458: declaration of 'cb' hides class member
-C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.h(94,17): message : see declaration of 'Application::cb'
-C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(502,20): warning C4101: 'cb': unreferenced local variable
-C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(386,10): warning C4189: 'wf': local variable is initialized but not referenced
-C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(593,80): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(205): warning C4715: 'Application::InitCubeVertexBuffer': not all control paths return a value
-C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(282): warning C4715: 'Application::InitCubeIndexBuffer': not all control paths return a value
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(485,15): warning C4458: declaration of 'wf' hides class member
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.h(71,7): message : see declaration of 'Application::wf'
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(601,22): warning C4458: declaration of 'cb' hides class member
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.h(98,17): message : see declaration of 'Application::cb'
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(601,20): warning C4101: 'cb': unreferenced local variable
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(485,10): warning C4189: 'wf': local variable is initialized but not referenced
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(691,80): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(283): warning C4715: 'Application::InitCubeVertexBuffer': not all control paths return a value
+C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Application.cpp(381): warning C4715: 'Application::InitCubeIndexBuffer': not all control paths return a value
   DX11 Framework.vcxproj -> C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo\Debug\DX11 Framework.exe

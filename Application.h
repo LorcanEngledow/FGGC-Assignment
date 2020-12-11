@@ -13,6 +13,7 @@ struct SimpleVertex
 {
     XMFLOAT3 Pos;
     XMFLOAT3 Normal;
+	XMFLOAT2 Tex;
 };
 
 struct ConstantBuffer
@@ -63,6 +64,9 @@ private:
 
 	ID3D11RasterizerState* _wireFrame;
 	ID3D11RasterizerState* _solid;
+
+	ID3D11ShaderResourceView* _pTextureRV = nullptr;
+	ID3D11SamplerState* _pSamplerLinear = nullptr;
 
 	bool wf;
 private:
