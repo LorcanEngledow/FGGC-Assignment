@@ -105,6 +105,14 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
     CreateDDSTextureFromFile(_pd3dDevice, L"Crate_COLOR.dds", nullptr, &_pTextureRV);
     _pImmediateContext->PSSetShaderResources(0, 1, &_pTextureRV);
 
+    // Load Models using OBJ loader
+    cubeMeshData = OBJLoader::Load("cube.obj", _pd3dDevice, false);
+    cylinderMeshData = OBJLoader::Load("cylinder.obj", _pd3dDevice, false);
+    sphereMeshData = OBJLoader::Load("sphere.obj", _pd3dDevice, false);
+    torusMeshData = OBJLoader::Load("donut.obj", _pd3dDevice, false);
+    headMeshData = OBJLoader::Load("monkey.obj", _pd3dDevice, false);
+    prismMeshData = OBJLoader::Load("prism.obj", _pd3dDevice, false);
+
     // Create the sample state
     D3D11_SAMPLER_DESC sampDesc;
     ZeroMemory(&sampDesc, sizeof(sampDesc));
@@ -250,18 +258,18 @@ HRESULT Application::InitCubeVertexBuffer()
 
     };
 
-    SimpleVertex vertices2[] =
-    {
-        { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.6f, 1.6f, 0.8f), XMFLOAT2(1.0f, 1.0f) }, //B
-        { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.8f, 0.8f, -1.6f), XMFLOAT2(1.0f, 1.0f) }, //G
-        { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-0.8f, 0.8f, 1.6f), XMFLOAT2(1.0f, 1.0f) }, //Y
-        { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.6f, 1.6f, 0.8f), XMFLOAT2(1.0f, 1.0f) }, //R
+    //SimpleVertex vertices2[] =
+    //{
+    //    { XMFLOAT3(-1.0f, 1.0f, -1.0f), XMFLOAT3(-1.6f, 1.6f, 0.8f), XMFLOAT2(1.0f, 1.0f) }, //B
+    //    { XMFLOAT3(1.0f, 1.0f, -1.0f), XMFLOAT3(0.8f, 0.8f, -1.6f), XMFLOAT2(1.0f, 1.0f) }, //G
+    //    { XMFLOAT3(-1.0f, 1.0f, 1.0f), XMFLOAT3(-0.8f, 0.8f, 1.6f), XMFLOAT2(1.0f, 1.0f) }, //Y
+    //    { XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT3(1.6f, 1.6f, 0.8f), XMFLOAT2(1.0f, 1.0f) }, //R
 
-        { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.6f, -1.6f, -0.8f), XMFLOAT2(1.0f, 1.0f) }, //P
-        { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-0.8f, -0.8f, -1.6f), XMFLOAT2(1.0f, 1.0f) }, //BL
-        { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.8f, -0.8f, 1.6f), XMFLOAT2(1.0f, 1.0f) }, //GR
-        { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.6f, -1.6f, 0.8f), XMFLOAT2(1.0f, 1.0f) }, //W
-    };
+    //    { XMFLOAT3(1.0f, -1.0f, -1.0f), XMFLOAT3(1.6f, -1.6f, -0.8f), XMFLOAT2(1.0f, 1.0f) }, //P
+    //    { XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT3(-0.8f, -0.8f, -1.6f), XMFLOAT2(1.0f, 1.0f) }, //BL
+    //    { XMFLOAT3(1.0f, -1.0f, 1.0f), XMFLOAT3(0.8f, -0.8f, 1.6f), XMFLOAT2(1.0f, 1.0f) }, //GR
+    //    { XMFLOAT3(-1.0f, -1.0f, 1.0f), XMFLOAT3(-1.6f, -1.6f, 0.8f), XMFLOAT2(1.0f, 1.0f) }, //W
+    //};
 
     //CalculateModelVectors(vertices, 36);
 
@@ -752,7 +760,12 @@ void Application::Draw()
 	_pImmediateContext->VSSetConstantBuffers(0, 1, &_pConstantBuffer);
     _pImmediateContext->PSSetConstantBuffers(0, 1, &_pConstantBuffer);
 	_pImmediateContext->PSSetShader(_pPixelShader, nullptr, 0);
-	_pImmediateContext->DrawIndexed(36, 0, 0);
+	/*_pImmediateContext->DrawIndexed(36, 0, 0);*/
+
+    //cubeMeshData
+
+    _pImmediateContext->IASetVertexBuffers(0, 1, &prismMeshData.VertexBuffer, &stride, &offset);
+    _pImmediateContext->IASetIndexBuffer(prismMeshData.IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
 
     world = XMLoadFloat4x4(&_world);
     _pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, &cb, 0, 0);

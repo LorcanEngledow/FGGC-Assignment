@@ -86,7 +86,7 @@ float4 PS(VS_OUTPUT input) : SV_Target
     float specularAmount = pow(max(dot(r, toEye), 0.0f), SpecularPower);
     float3 specular = specularAmount * (SpecularMtrl * SpecularLight).rgb;
 
-    textureColor.rgb += diffuse + ambient + specular;
+    textureColor.rgb += ambient + specular;
     textureColor.a = DiffuseMtrl.a;
 
     return textureColor;
