@@ -15,6 +15,8 @@
     <ClInclude Include="Vector3D.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="D:\Downloads\DDSTextureLoader\DDSTextureLoader.h" />
+    <ClInclude Include="Structures.h" />
+    <ClInclude Include="OBJLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
@@ -22,6 +24,7 @@
     <ClCompile Include="Vector3D.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="D:\Downloads\DDSTextureLoader\DDSTextureLoader.cpp" />
+    <ClCompile Include="OBJLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CLInclude Include="resource.h">

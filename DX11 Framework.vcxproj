@@ -141,8 +141,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Lorcan\source\repos\FGGC-Assignment-Repo</AdditionalIncludeDirectories>
       <AdditionalOptions> %(AdditionalOptions)</AdditionalOptions>
       <PreprocessorDefinitions>WIN32;_DEBUG;DEBUG;PROFILE;_WINDOWS;D3DXFX_LARGEADDRESS_HANDLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
@@ -379,6 +378,7 @@
     <ClCompile Include="D:\Downloads\DDSTextureLoader\DDSTextureLoader.cpp" />
     <ClCompile Include="DX11 Framework.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="OBJLoader.cpp" />
     <ClCompile Include="Vector3D.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -388,7 +388,9 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="D:\Downloads\DDSTextureLoader\DDSTextureLoader.h" />
     <ClInclude Include="Matrix.h" />
+    <ClInclude Include="OBJLoader.h" />
     <CLInclude Include="resource.h" />
+    <ClInclude Include="Structures.h" />
     <ClInclude Include="Vector3D.h" />
     <ResourceCompile Include="DX11 Framework.rc" />
   </ItemGroup>

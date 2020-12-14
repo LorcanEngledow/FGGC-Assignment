@@ -6,35 +6,10 @@
 #include <directxmath.h>
 #include <directxcolors.h>
 #include "resource.h"
+#include "Structures.h"
+#include "OBJLoader.h"
 
 using namespace DirectX;
-
-struct SimpleVertex
-{
-    XMFLOAT3 Pos;
-    XMFLOAT3 Normal;
-	XMFLOAT2 Tex;
-};
-
-struct ConstantBuffer
-{
-	XMMATRIX mWorld;
-	XMMATRIX mView;
-	XMMATRIX mProjection;
-
-	XMFLOAT4 DiffuseMtrl;
-	XMFLOAT4 DiffuseLight;
-	XMFLOAT3 LightVecW;
-	float gTime;
-
-	XMFLOAT4 AmbientMtrl;
-	XMFLOAT4 AmbientLight;
-
-	XMFLOAT4 SpecularMtrl;
-	XMFLOAT4 SpecularLight;
-	float SpecularPower;
-	XMFLOAT3 EyePosW;
-};
 
 class Application
 {
@@ -94,6 +69,13 @@ private:
 	XMFLOAT4 SpecularLight;
 	float SpecularPower;
 	XMFLOAT3 EyePosW;
+
+	MeshData cubeMeshData;
+	MeshData sphereMeshData;
+	MeshData cylinderMeshData;
+	MeshData torusMeshData;
+	MeshData headMeshData;
+	MeshData prismMeshData;
 public:
 	ConstantBuffer cb;
 	Application();
